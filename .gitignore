@@ -40,9 +40,12 @@ neo4j/plugins/
 .DS_Store
 Thumbs.db
 
-# Output files
-*.png
+# Output files (generated during analysis)
+regression_plot.png
+regression_output.tex
 *.pdf
+
+# Directories for outputs
 output/
 results/
 
