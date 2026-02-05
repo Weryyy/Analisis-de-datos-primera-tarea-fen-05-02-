@@ -1,0 +1,55 @@
+# Python
+__pycache__/
+*.py[cod]
+*$py.class
+*.so
+.Python
+env/
+venv/
+ENV/
+build/
+develop-eggs/
+dist/
+downloads/
+eggs/
+.eggs/
+lib/
+lib64/
+parts/
+sdist/
+var/
+wheels/
+*.egg-info/
+.installed.cfg
+*.egg
+
+# Data files (generated)
+neo4j/data/
+neo4j/logs/
+neo4j/import/
+neo4j/plugins/
+data/
+
+# IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Output files (generated during analysis)
+regression_plot.png
+regression_output.tex
+*.pdf
+*.parquet
+
+# Directories for outputs
+output/
+results/
+
+# Jupyter Notebook
+.ipynb_checkpoints

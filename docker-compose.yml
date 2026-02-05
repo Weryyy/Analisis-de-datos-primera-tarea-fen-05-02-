@@ -1,0 +1,22 @@
+version: '3.8'
+
+services:
+  # Servicio de análisis de datos con HPC Stack
+  analysis:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    container_name: house_price_analysis_hpc
+    volumes:
+      - ./data:/app/data
+      - ./:/app
+    environment:
+      - PYTHONUNBUFFERED=1
+    command: /bin/bash -c "python generate_data.py && python load_arrow_data.py && python linear_regression.py"
+    networks:
+      - hpc_network
+
+networks:
+  hpc_network:
+    driver: bridge
+
