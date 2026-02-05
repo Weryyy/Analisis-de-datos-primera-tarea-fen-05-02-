@@ -218,8 +218,6 @@ def create_visualization(results: dict, output_file: str = 'regression_plot.png'
         results: Diccionario con los resultados
         output_file: Archivo de salida para la gráfica
     """
-    plt.figure(figsize=(12, 8))
-    
     # Configurar estilo
     sns.set_style("whitegrid")
     

@@ -1,4 +1,6 @@
 #!/bin/bash
+set -e  # Exit immediately if any command fails
+
 # Script para ejecutar el pipeline completo de análisis
 
 echo "============================================"

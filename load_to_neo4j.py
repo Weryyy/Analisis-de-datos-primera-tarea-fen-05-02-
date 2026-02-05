@@ -52,30 +52,24 @@ class Neo4jLoader:
         """
         df = pd.read_csv(csv_path)
         
+        # Convertir DataFrame a lista de diccionarios
+        houses_data = df.to_dict('records')
+        
         with self.driver.session() as session:
-            # Crear nodos de casas
-            for _, row in df.iterrows():
-                session.run("""
-                    CREATE (h:House {
-                        id: $id,
-                        area_m2: $area_m2,
-                        habitaciones: $habitaciones,
-                        banos: $banos,
-                        antiguedad_anos: $antiguedad_anos,
-                        distancia_centro_km: $distancia_centro_km,
-                        calificacion_vecindario: $calificacion_vecindario,
-                        precio_usd: $precio_usd
-                    })
-                """, 
-                    id=int(row['id']),
-                    area_m2=float(row['area_m2']),
-                    habitaciones=int(row['habitaciones']),
-                    banos=int(row['banos']),
-                    antiguedad_anos=float(row['antiguedad_anos']),
-                    distancia_centro_km=float(row['distancia_centro_km']),
-                    calificacion_vecindario=float(row['calificacion_vecindario']),
-                    precio_usd=float(row['precio_usd'])
-                )
+            # Usar UNWIND para inserción por lotes (más eficiente)
+            session.run("""
+                UNWIND $houses as house
+                CREATE (h:House {
+                    id: house.id,
+                    area_m2: house.area_m2,
+                    habitaciones: house.habitaciones,
+                    banos: house.banos,
+                    antiguedad_anos: house.antiguedad_anos,
+                    distancia_centro_km: house.distancia_centro_km,
+                    calificacion_vecindario: house.calificacion_vecindario,
+                    precio_usd: house.precio_usd
+                })
+            """, houses=houses_data)
             
             print(f"Cargadas {len(df)} casas en Neo4j")
     
