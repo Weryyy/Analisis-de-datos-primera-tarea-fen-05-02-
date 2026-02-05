@@ -1,0 +1,376 @@
+\documentclass[12pt,a4paper]{article}
+
+% --- CONFIGURACION PARA OVERLEAF (UTF8) ---
+\usepackage[T1]{fontenc}
+\usepackage[utf8]{inputenc}
+\usepackage[spanish]{babel}
+\usepackage{csquotes}
+\usepackage{graphicx}
+\usepackage{amsmath}
+\usepackage{amssymb}
+\usepackage{booktabs}
+\usepackage{hyperref}
+\usepackage{float}
+\usepackage{listings}
+\usepackage{xcolor}
+\usepackage{geometry}
+\usepackage{fancyhdr}
+\usepackage{setspace}
+
+% Configuracion de margenes
+\geometry{left=2.5cm, right=2.5cm, top=2.5cm, bottom=2.5cm}
+
+% Configuracion de encabezado y pie
+\pagestyle{fancy}
+\fancyhf{}
+\rhead{Informe Predictivo}
+\lhead{Prediccion de Precios de Viviendas}
+\cfoot{\thepage}
+
+% Configuracion de listings
+\lstset{
+    language=Python,
+    basicstyle=\ttfamily\small,
+    keywordstyle=\color{blue},
+    commentstyle=\color{gray},
+    stringstyle=\color{red},
+    breaklines=true,
+    showstringspaces=false,
+    backgroundcolor=\color{gray!10}
+}
+
+\title{\textbf{Informe Tecnico: Analisis y Prediccion de Precios de Viviendas}}
+\author{Analisis Computacional de Datos Inmobiliarios}
+\date{Febrero, 2026}
+
+\begin{document}
+
+\maketitle
+
+\begin{abstract}
+Este informe presenta un analisis exhaustivo de un modelo de prediccion de precios de viviendas basado en aprendizaje automatico. El proyecto procesa y analiza un conjunto de datos que contiene aproximadamente 1 millon de registros inmobiliarios, utilizando caracteristicas como tamano de la propiedad, numero de habitaciones, antiguedad y ubicacion geografica. Se evaluaran las ventajas y desventajas del enfoque implementado, asi como sus implicaciones practicas.
+\end{abstract}
+
+\tableofcontents
+\newpage
+
+% ========================================
+\section{Introduccion}
+% ========================================
+
+La prediccion de precios en el mercado inmobiliario es un problema de regresion clasico en la ciencia de datos. Con la creciente disponibilidad de datos sobre propiedades y transacciones, los modelos de aprendizaje automatico ofrecen oportunidades sin precedentes para estimar valores de manera precisa y automatizada.
+
+Este proyecto aborda la construccion de un modelo predictivo escalable capaz de procesar y analizar un volumen significativo de datos (aproximadamente 1 millon de filas) para generar predicciones confiables de precios de viviendas.
+
+% ========================================
+\section{Descripcion del Problema}
+% ========================================
+
+\subsection{Objetivo}
+Desarrollar un modelo de regresion que prediga el precio de una vivienda dado un conjunto de caracteristicas independientes.
+
+\subsection{Variables del Modelo}
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Variable} & \textbf{Tipo} & \textbf{Descripcion} \\
+\hline
+Tamano & Numerica (continua) & Area de la propiedad en m2 \\
+Habitaciones & Numerica (discreta) & Numero de cuartos \\
+Antiguedad & Numerica (continua) & Anos desde su construccion \\
+Zona & Categorica & Ubicacion geografica (A, B, C, etc.) \\
+Precio & Numerica (continua) & Variable dependiente a predecir \\
+\hline
+\end{tabular}
+\caption{Variables del conjunto de datos}
+\end{table}
+
+\subsection{Escala del Proyecto}
+El dataset contiene aproximadamente \textbf{1,000,000 de registros}, lo que presenta desafios significativos en terminos de:
+\begin{itemize}
+    \item Almacenamiento y procesamiento de datos
+    \item Tiempo de entrenamiento del modelo
+    \item Memoria computacional requerida
+    \item Optimizacion y escalabilidad
+\end{itemize}
+
+% ========================================
+\section{Metodologia}
+% ========================================
+
+\subsection{Preprocesamiento de Datos}
+El preprocesamiento incluye las siguientes etapas:
+
+\begin{enumerate}
+    \item \textbf{Limpieza de datos}: Eliminacion de valores nulos y duplicados
+    \item \textbf{Codificacion de variables categoricas}: Conversion de variables de zona a formato numerico
+    \item \textbf{Normalizacion}: Escalado de caracteristicas numericas
+    \item \textbf{Division del conjunto}: Separacion en datos de entrenamiento (80\%) y prueba (20\%)
+\end{enumerate}
+
+\subsection{Algoritmos Considerados}
+Se contemplan los siguientes enfoques para modelado:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|l|}
+\hline
+\textbf{Algoritmo} & \textbf{Ventaja} & \textbf{Limitacion} \\
+\hline
+Regresion Lineal & Simplicidad, interpretabilidad & Linealidad asumida \\
+Random Forest & Robustez, manejo de no-linealidad & Tiempo de entrenamiento \\
+Gradient Boosting & Precision alta & Complejidad del modelo \\
+Neural Networks & Flexibilidad extrema & Riesgo de sobreajuste \\
+\hline
+\end{tabular}
+\caption{Comparativa de algoritmos de regresion}
+\end{table}
+
+\subsection{Metricas de Evaluacion}
+Los modelos seran evaluados mediante:
+
+\begin{equation}
+\text{MAE} = \frac{1}{n}\sum_{i=1}^{n}|y_i - \hat{y}_i|
+\end{equation}
+
+\begin{equation}
+\text{RMSE} = \sqrt{\frac{1}{n}\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}
+\end{equation}
+
+\begin{equation}
+R^2 = 1 - \frac{\sum_{i=1}^{n}(y_i - \hat{y}_i)^2}{\sum_{i=1}^{n}(y_i - \bar{y})^2}
+\end{equation}
+
+Donde $y_i$ son valores reales, $\hat{y}_i$ son predicciones y $\bar{y}$ es la media.
+
+% ========================================
+\section{Ventajas del Modelo}
+% ========================================
+
+\subsection{Escalabilidad}
+\begin{itemize}
+    \item El modelo puede procesarse con frameworks como Spark o Dask para distribuir la carga computacional
+    \item Permite integracion en pipelines de produccion
+    \item Manejo eficiente de datasets masivos mediante chunking
+\end{itemize}
+
+\subsection{Precision Predictiva}
+\begin{itemize}
+    \item Multiples caracteristicas permiten capturar la complejidad del mercado inmobiliario
+    \item Con 1M de muestras, el modelo tiene suficientes datos para generalizar bien
+    \item Reduccion del error mediante tecnicas de validacion cruzada
+\end{itemize}
+
+\subsection{Interpretabilidad}
+\begin{itemize}
+    \item Las caracteristicas utilizadas son directamente interpretables para stakeholders
+    \item Posibilidad de analizar importancia de caracteristicas
+    \item Explicacion clara del impacto de cada variable en el precio
+\end{itemize}
+
+\subsection{Flexibilidad}
+\begin{itemize}
+    \item El modelo puede adaptarse a diferentes mercados geograficos
+    \item Facil incorporacion de nuevas caracteristicas (energia, seguridad, amenidades)
+    \item Reentrenamiento periodico con datos actualizados
+\end{itemize}
+
+% ========================================
+\section{Desventajas del Modelo}
+% ========================================
+
+\subsection{Limitaciones Tecnicas}
+\begin{itemize}
+    \item \textbf{Overhead computacional}: El entrenamiento de modelos complejos con 1M de registros requiere infraestructura costosa
+    \item \textbf{Tiempo de ejecucion}: Modelos como Gradient Boosting pueden tardar horas en entrenar
+    \item \textbf{Dependencia de hardware}: Requiere suficiente RAM para cargar datasets masivos
+\end{itemize}
+
+\subsection{Limitaciones de Datos}
+\begin{itemize}
+    \item \textbf{Calidad del dato}: Errores en la recopilacion de datos se amplifican con 1M de registros
+    \item \textbf{Sesgos historicos}: El modelo aprende sesgos del mercado pasado
+    \item \textbf{Volatilidad del mercado}: Cambios economicos rapidos pueden invalidar predicciones
+    \item \textbf{Informacion faltante}: Caracteristicas adicionales relevantes no disponibles
+\end{itemize}
+
+\subsection{Riesgos de Generalización}
+\begin{itemize}
+    \item \textbf{Sobreajuste}: Con dataset tan grande, el modelo podria captar ruido
+    \item \textbf{Distribucion sesgada}: Si los datos no representan bien todos los segmentos del mercado
+    \item \textbf{Cambios temporales}: Patrones historicos pueden no aplicar al presente
+\end{itemize}
+
+\subsection{Factores Externos No Capturados}
+\begin{itemize}
+    \item Cambios en politicas de vivienda
+    \item Fluctuaciones economicas macro
+    \item Eventos locales (desarrollos, infraestructura)
+    \item Preferencias subjetivas del comprador
+    \item Caracteristicas intangibles de la propiedad
+\end{itemize}
+
+% ========================================
+\section{Analisis Comparativo de Resultados}
+% ========================================
+
+\subsection{Escenario Optimista}
+Si el modelo logra un $R^2 \geq 0.85$:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Aspecto} & \textbf{Implicacion} \\
+\hline
+Precision & Modelo altamente confiable \\
+Aplicacion & Viable para decisiones financieras \\
+Valor Comercial & Integracion en plataformas inmobiliarias \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Escenario Realista}
+Si el modelo logra un $0.70 \leq R^2 < 0.85$:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Aspecto} & \textbf{Implicacion} \\
+\hline
+Precision & Modelo util con margenes de error \\
+Aplicacion & Apoyo a decisiones, no determinante \\
+Valor Comercial & Herramienta complementaria \\
+\hline
+\end{tabular}
+\end{table}
+
+\subsection{Escenario Pesimista}
+Si el modelo logra un $R^2 < 0.70$:
+
+\begin{table}[H]
+\centering
+\begin{tabular}{|l|l|}
+\hline
+\textbf{Aspecto} & \textbf{Implicacion} \\
+\hline
+Precision & Modelo con limitaciones significativas \\
+Aplicacion & Requiere refinamiento de caracteristicas \\
+Valor Comercial & Necesidad de recolectar mas datos \\
+\hline
+\end{tabular}
+\end{table}
+
+% ========================================
+\section{Recomendaciones}
+% ========================================
+
+\subsection{Para Mejora del Modelo}
+\begin{enumerate}
+    \item Incorporar mas caracteristicas relevantes (proximidad a transporte, servicios, seguridad)
+    \item Implementar ingenieria de caracteristicas (interacciones entre variables)
+    \item Utilizar validacion cruzada estratificada
+    \item Considerar modelos de ensemble para mejorar robustez
+\end{enumerate}
+
+\subsection{Para Implementacion en Produccion}
+\begin{enumerate}
+    \item Establecer pipelines de datos automatizados
+    \item Implementar monitoreo de desempeno del modelo
+    \item Crear alertas para cambios significativos en el mercado
+    \item Planificar reentrenamiento periodico (mensual/trimestral)
+    \item Documentar supuestos del modelo y limitaciones
+\end{enumerate}
+
+\subsection{Para Gestion de Riesgo}
+\begin{enumerate}
+    \item Proporcionar intervalos de confianza junto a predicciones
+    \item Mantener auditoria de decisiones tomadas basadas en el modelo
+    \item Establecer limites de confianza para aplicar el modelo
+    \item Supervision humana para casos fuera de rango normal
+\end{enumerate}
+
+% ========================================
+\section{Conclusiones}
+% ========================================
+
+El modelo de prediccion de precios de viviendas basado en un dataset de 1 millon de registros representa una oportunidad significativa para automatizar y mejorar la precision en valuación inmobiliaria. Sin embargo, sus limitaciones tecnicas y el factor humano en el mercado inmobiliario requieren que sea visto como una herramienta de apoyo, no como verdad absoluta.
+
+\subsection{Puntos Clave}
+\begin{itemize}
+    \item \textbf{Ventaja principal}: Escalabilidad y capacidad de procesamiento masivo de datos
+    \item \textbf{Desventaja principal}: Volatilidad del mercado y factores no cuantificables
+    \item \textbf{Aplicación realista}: Herramienta de apoyo en decisiones inmobiliarias
+    \item \textbf{Camino futuro}: Integracion con variables economicas y analisis temporal
+\end{itemize}
+
+\subsection{Proximas Fases}
+\begin{enumerate}
+    \item Implementar y entrenar el modelo
+    \item Evaluar metricas contra benchmarks de la industria
+    \item Validar con datos externos y recientes
+    \item Desarrollar interfaz de usuario para predicciones
+    \item Establecer proceso de actualizacion del modelo
+\end{enumerate}
+
+% ========================================
+\section{Apendice: Codigo Base}
+% ========================================
+
+\subsection{Carga y Preprocesamiento}
+\begin{lstlisting}
+import pandas as pd
+import numpy as np
+from sklearn.model_selection import train_test_split
+from sklearn.preprocessing import StandardScaler
+
+# Carga de datos
+df = pd.read_csv('casas.csv')
+
+# Analisis exploratorio
+print(df.head())
+print(df.info())
+print(df.describe())
+
+# Separacion de caracteristicas y target
+X = df[['tamano', 'habitaciones', 'antiguedad']]
+y = df['precio']
+
+# Codificacion de variables categoricas
+X = pd.get_dummies(X, columns=['zona'])
+
+# Normalización
+scaler = StandardScaler()
+X_scaled = scaler.fit_transform(X)
+
+# Division entrenamiento/prueba
+X_train, X_test, y_train, y_test = train_test_split(
+    X_scaled, y, test_size=0.2, random_state=42
+)
+\end{lstlisting}
+
+\subsection{Entrenamiento de Modelo}
+\begin{lstlisting}
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.metrics import mean_absolute_error, r2_score
+
+# Entrenamiento
+model = RandomForestRegressor(n_estimators=100, 
+                               random_state=42, 
+                               n_jobs=-1)
+model.fit(X_train, y_train)
+
+# Predicciones
+y_pred = model.predict(X_test)
+
+# Evaluacion
+mae = mean_absolute_error(y_test, y_pred)
+r2 = r2_score(y_test, y_pred)
+
+print(f'MAE: ${mae:.2f}')
+print(f'R2 Score: {r2:.4f}')
+\end{lstlisting}
+
+\end{document}
