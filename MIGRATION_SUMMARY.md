@@ -86,7 +86,7 @@ Statistics             0.60ms   -         0.18ms   3.4x
 
 ### New Files
 - `Dockerfile` - Container definition for HPC stack
-- `load_arrow_data.py` - Arrow-based data loader (231 lines)
+- `load_arrow_data.py` - Arrow-based data loader (223 lines)
 - `benchmark_performance.py` - Performance comparison tool (178 lines)
 
 ### Modified Files

@@ -81,8 +81,11 @@ def benchmark_filtering():
     arrow_time = time.time() - start_time
     print(f"Arrow (Parquet): {arrow_time*1000:.2f} ms - {len(filtered_arrow)} registros")
     
-    speedup = pandas_time / arrow_time if arrow_time > 0 else float('inf')
-    print(f"\n⚡ Arrow es {speedup:.1f}x más rápido")
+    speedup = pandas_time / arrow_time if arrow_time > 1e-6 else None
+    if speedup:
+        print(f"\n⚡ Arrow es {speedup:.1f}x más rápido")
+    else:
+        print(f"\n⚡ Arrow: operación demasiado rápida para medir con precisión")
 
 
 def benchmark_statistics():
@@ -110,8 +113,11 @@ def benchmark_statistics():
     arrow_time = time.time() - start_time
     print(f"Arrow: {arrow_time*1000:.2f} ms")
     
-    speedup = pandas_time / arrow_time if arrow_time > 0 else float('inf')
-    print(f"\n⚡ Arrow es {speedup:.1f}x más rápido")
+    speedup = pandas_time / arrow_time if arrow_time > 1e-6 else None
+    if speedup:
+        print(f"\n⚡ Arrow es {speedup:.1f}x más rápido")
+    else:
+        print(f"\n⚡ Arrow: operación demasiado rápida para medir con precisión")
 
 
 def compare_file_sizes():

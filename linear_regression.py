@@ -21,6 +21,7 @@ def load_data_from_parquet():
     """
     loader = ArrowDataLoader('house_data.parquet')
     # Usar zero-copy para máximo rendimiento
+    # zero_copy=True optimiza con split_blocks y use_threads para operaciones eficientes
     df = loader.get_pandas_dataframe(zero_copy=True)
     print(f"Datos cargados desde Parquet con Arrow: {len(df)} casas")
     
