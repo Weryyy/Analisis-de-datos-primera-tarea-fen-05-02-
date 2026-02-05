@@ -1,15 +1,23 @@
 # Análisis de Datos: Precios de Casas
 
-Proyecto de análisis de datos que genera un conjunto de datos artificiales de precios de casas, los almacena en Neo4j usando Docker, y realiza un análisis de regresión lineal simple.
+Proyecto de análisis de datos que genera un conjunto de datos artificiales de precios de casas, utiliza **Apache Arrow** para operaciones de alto rendimiento con **zero-copy**, almacena datos en formato **Parquet**, y realiza un análisis de regresión lineal simple.
 
 ## 📋 Descripción
 
-Este proyecto crea un conjunto de datos sintético de 500 casas con diversas características (área, habitaciones, baños, antigüedad, etc.) y sus respectivos precios. Los datos se almacenan en una base de datos Neo4j desplegada mediante Docker, y se realiza un análisis de regresión lineal simple para estudiar la relación entre el área de la casa y su precio.
+Este proyecto crea un conjunto de datos sintético de 500 casas con diversas características (área, habitaciones, baños, antigüedad, etc.) y sus respectivos precios. Los datos se almacenan en formato Parquet optimizado para análisis de alto rendimiento, utilizando Apache Arrow para operaciones zero-copy y máxima eficiencia.
+
+## 🚀 Stack HPC (High-Performance Computing)
+
+- **Apache Arrow**: Framework para operaciones in-memory con zero-copy
+- **Parquet**: Formato columnar optimizado para análisis
+- **Pandas**: Integración con Arrow para DataFrames eficientes
+- **Docker**: Containerización para despliegue fácil y reproducible
 
 ## 🛠️ Tecnologías Utilizadas
 
-- **Python 3.x**: Lenguaje principal del proyecto
-- **Neo4j 5.15.0**: Base de datos de grafos para almacenar los datos
+- **Python 3.11+**: Lenguaje principal del proyecto
+- **Apache Arrow (PyArrow)**: Operaciones zero-copy de alto rendimiento
+- **Parquet**: Formato de almacenamiento columnar con compresión
 - **Docker**: Containerización para despliegue fácil
 - **Pandas & NumPy**: Manipulación y generación de datos
 - **Scikit-learn**: Implementación de regresión lineal
@@ -20,14 +28,16 @@ Este proyecto crea un conjunto de datos sintético de 500 casas con diversas car
 
 ```
 .
-├── docker-compose.yml          # Configuración de Docker para Neo4j
-├── requirements.txt            # Dependencias de Python
-├── generate_data.py           # Generación de datos artificiales
-├── load_to_neo4j.py          # Carga de datos en Neo4j
-├── linear_regression.py       # Análisis de regresión lineal
-├── house_data.csv            # Datos generados (creado al ejecutar)
-├── regression_output.tex      # Salida en formato LaTeX (creado al ejecutar)
-└── regression_plot.png        # Visualización de la regresión (creado al ejecutar)
+├── Dockerfile                  # Imagen Docker para el entorno de análisis
+├── docker-compose.yml          # Configuración del stack HPC
+├── requirements.txt            # Dependencias de Python (Arrow, Parquet)
+├── generate_data.py           # Generación de datos en formato Parquet
+├── load_arrow_data.py         # Cargador con Apache Arrow (zero-copy)
+├── linear_regression.py       # Análisis de regresión con Arrow
+├── house_data.parquet         # Datos optimizados (creado al ejecutar)
+├── house_data.csv             # Datos en CSV (compatibilidad)
+├── regression_output.tex      # Salida en formato LaTeX
+└── regression_plot.png        # Visualización de la regresión
 ```
 
 ## 🚀 Instalación y Uso
@@ -35,73 +45,82 @@ Este proyecto crea un conjunto de datos sintético de 500 casas con diversas car
 ### Prerrequisitos
 
 - Docker y Docker Compose instalados
-- Python 3.8 o superior
+- Python 3.11 o superior (para ejecución local)
 - pip (gestor de paquetes de Python)
 
-### Paso 1: Clonar el repositorio
+### Opción 1: Ejecución con Docker (Recomendado)
+
+```bash
+# Construir y ejecutar el contenedor
+docker-compose up --build
+
+# El contenedor ejecutará automáticamente:
+# 1. Generación de datos en Parquet
+# 2. Demostración de operaciones Arrow
+# 3. Análisis de regresión lineal
+```
+
+### Opción 2: Ejecución Local
+
+#### Paso 1: Clonar el repositorio
 
 ```bash
 git clone <repository-url>
 cd Analisis-de-datos-primera-tarea-fen-05-02-
 ```
 
-### Paso 2: Instalar dependencias de Python
+#### Paso 2: Instalar dependencias de Python
 
 ```bash
 pip install -r requirements.txt
 ```
 
-### Paso 3: Iniciar Neo4j con Docker
+#### Paso 3: Ejecutar el pipeline completo
 
 ```bash
-docker-compose up -d
+# Opción A: Usar el script automatizado
+./run_pipeline.sh
+
+# Opción B: Ejecutar paso a paso
+python generate_data.py        # Genera datos en Parquet
+python load_arrow_data.py      # Demuestra operaciones Arrow
+python linear_regression.py    # Ejecuta análisis
 ```
 
-Esto iniciará Neo4j en:
-- **Browser Neo4j**: http://localhost:7474
-- **Bolt Protocol**: bolt://localhost:7687
-- **Credenciales**: usuario: `neo4j`, contraseña: `password123`
+## 📊 Ventajas del Stack HPC
 
-### Paso 4: Generar datos artificiales
+### Apache Arrow - Zero-Copy Operations
 
-```bash
-python generate_data.py
-```
+Apache Arrow permite operaciones sin copia de memoria:
+- **Mayor velocidad**: Acceso directo a la memoria sin copias innecesarias
+- **Menor uso de RAM**: Reutilización de buffers de memoria
+- **Interoperabilidad**: Formato estándar entre diferentes herramientas
 
-Este script genera 500 registros de casas con características aleatorias pero realistas, guardándolos en `house_data.csv`.
+### Formato Parquet
 
-### Paso 5: Cargar datos en Neo4j
-
-```bash
-python load_to_neo4j.py
-```
-
-Este script carga los datos del CSV a la base de datos Neo4j.
-
-### Paso 6: Ejecutar análisis de regresión lineal
-
-```bash
-python linear_regression.py
-```
-
-Este script:
-1. Carga los datos desde Neo4j
-2. Realiza regresión lineal simple (área vs precio)
-3. Calcula métricas de evaluación (R², MSE, RMSE, MAE)
-4. Genera un documento LaTeX con los resultados
-5. Crea visualizaciones gráficas
+- **Compresión eficiente**: Reduce tamaño de almacenamiento (Snappy compression)
+- **Lectura columnar**: Solo lee las columnas necesarias
+- **Metadata integrado**: Estadísticas y esquema incluidos
+- **Portabilidad**: Formato estándar de la industria
 
 ## 📊 Resultados
 
 El análisis genera los siguientes archivos:
 
-1. **regression_output.tex**: Documento LaTeX completo con:
+1. **house_data.parquet**: Datos en formato columnar optimizado
+   - Compresión Snappy para mejor rendimiento
+   - Metadata integrado con estadísticas
+   - Soporte para operaciones zero-copy
+
+2. **house_data.csv**: Formato CSV para compatibilidad
+
+3. **regression_output.tex**: Documento LaTeX completo con:
    - Metodología del análisis
    - Ecuación de regresión
    - Métricas de evaluación
    - Interpretación de resultados
 
-2. **regression_plot.png**: Visualización con:
+4. **regression_plot.png**: Visualización con:
    - Scatter plot de datos reales
    - Línea de regresión ajustada
    - Gráfico de residuos
@@ -132,16 +151,10 @@ Donde:
 
 ## 🛑 Detener el Proyecto
 
-Para detener Neo4j:
+Para detener el contenedor Docker:
 
 ```bash
 docker-compose down
-```
-
-Para detener y eliminar todos los datos:
-
-```bash
-docker-compose down -v
 ```
 
 ## 📝 Compilar el Documento LaTeX
@@ -163,18 +176,44 @@ Editar `generate_data.py` y modificar:
 data = generate_house_data(n_samples=1000, random_state=42)  # Genera 1000 casas
 ```
 
-### Cambiar credenciales de Neo4j
+### Operaciones con Apache Arrow
 
-Editar `docker-compose.yml`:
-```yaml
-- NEO4J_AUTH=neo4j/tu_nueva_contraseña
+El script `load_arrow_data.py` demuestra operaciones HPC:
+
+```python
+from load_arrow_data import ArrowDataLoader
+
+# Cargar datos con zero-copy
+loader = ArrowDataLoader('house_data.parquet')
+
+# Obtener tabla Arrow (zero-copy)
+table = loader.get_arrow_table()
+
+# Filtrar por precio (operaciones eficientes)
+filtered = loader.filter_by_price_range(200000, 300000)
+
+# Obtener top N casas más caras
+top_10 = loader.get_top_n_by_price(10)
+
+# Estadísticas con PyArrow compute
+stats = loader.get_statistics()
 ```
 
-Y actualizar en `load_to_neo4j.py` y `linear_regression.py`.
+### Comparación de Formatos
+
+| Característica | Parquet + Arrow | CSV |
+|---------------|-----------------|-----|
+| Tamaño en disco | ~20 KB (comprimido) | ~19 KB |
+| Velocidad de lectura | **Muy rápida** | Lenta |
+| Lectura columnar | ✅ Sí | ❌ No |
+| Zero-copy | ✅ Sí | ❌ No |
+| Metadata | ✅ Incluido | ❌ No |
+| Compresión | ✅ Snappy/Gzip | ❌ No |
 
 ## 📚 Referencias
 
-- [Neo4j Python Driver](https://neo4j.com/docs/python-manual/current/)
+- [Apache Arrow Documentation](https://arrow.apache.org/docs/python/)
+- [Parquet Format Specification](https://parquet.apache.org/docs/)
 - [Scikit-learn Linear Regression](https://scikit-learn.org/stable/modules/generated/sklearn.linear_model.LinearRegression.html)
 - [Docker Compose](https://docs.docker.com/compose/)
 
@@ -185,3 +224,14 @@ Este proyecto es para fines educativos.
 ## 👥 Autor
 
 Proyecto creado para el curso de Análisis de Datos - FEN 05/02
+
+---
+
+## 🆕 Novedades en esta versión
+
+- ✅ Migración de Neo4j a stack HPC con Parquet + Arrow
+- ✅ Operaciones zero-copy para máximo rendimiento
+- ✅ Formato columnar optimizado para análisis
+- ✅ Sin dependencias de bases de datos externas
+- ✅ Solución completa en contenedor Docker
+- ✅ Compatible con entornos con restricciones de firewall

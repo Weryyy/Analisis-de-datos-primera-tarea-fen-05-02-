@@ -1,6 +1,7 @@
 """
 Script para realizar regresión lineal simple sobre los datos de casas
 Analiza la relación entre el área de la casa y su precio
+Utiliza Apache Arrow para operaciones de alto rendimiento
 """
 import numpy as np
 import pandas as pd
@@ -8,23 +9,31 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from sklearn.linear_model import LinearRegression
 from sklearn.metrics import mean_squared_error, r2_score, mean_absolute_error
-from load_to_neo4j import Neo4jLoader
+from load_arrow_data import ArrowDataLoader
 
 
-def load_data_from_neo4j():
+def load_data_from_parquet():
     """
-    Carga los datos desde Neo4j
+    Carga los datos desde Parquet usando Apache Arrow (zero-copy)
     
     Returns:
         DataFrame con los datos de las casas
     """
-    loader = Neo4jLoader()
-    try:
-        df = loader.get_all_houses()
-        print(f"Datos cargados desde Neo4j: {len(df)} casas")
-        return df
-    finally:
-        loader.close()
+    loader = ArrowDataLoader('house_data.parquet')
+    # Usar zero-copy para máximo rendimiento
+    df = loader.get_pandas_dataframe(zero_copy=True)
+    print(f"Datos cargados desde Parquet con Arrow: {len(df)} casas")
+    
+    # Mostrar estadísticas usando Arrow compute
+    print("\nEstadísticas calculadas con PyArrow:")
+    stats = loader.get_statistics()
+    for key, value in stats.items():
+        if isinstance(value, float):
+            print(f"  {key}: {value:,.2f}")
+        else:
+            print(f"  {key}: {value}")
+    
+    return df
 
 
 def perform_simple_linear_regression(df: pd.DataFrame, 
@@ -257,11 +266,12 @@ def create_visualization(results: dict, output_file: str = 'regression_plot.png'
 if __name__ == '__main__':
     print("="*60)
     print("ANÁLISIS DE REGRESIÓN LINEAL - PRECIO DE CASAS")
+    print("Usando Apache Arrow + Parquet para alto rendimiento")
     print("="*60)
     
-    # Cargar datos desde Neo4j
-    print("\nCargando datos desde Neo4j...")
-    df = load_data_from_neo4j()
+    # Cargar datos desde Parquet con Apache Arrow
+    print("\nCargando datos desde Parquet con Apache Arrow...")
+    df = load_data_from_parquet()
     
     # Realizar regresión lineal simple (área vs precio)
     print("\nRealizando regresión lineal simple...")

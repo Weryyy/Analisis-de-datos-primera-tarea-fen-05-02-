@@ -1,6 +1,6 @@
-# Guía Rápida de Inicio
+# Guía Rápida de Inicio - HPC Stack
 
-Esta guía te ayudará a ejecutar el análisis de precios de casas en pocos minutos.
+Esta guía te ayudará a ejecutar el análisis de precios de casas con **Apache Arrow + Parquet** en pocos minutos.
 
 ## 📦 Instalación Rápida
 
@@ -14,7 +14,7 @@ Si no tienes Docker instalado:
   sudo apt-get install docker.io docker-compose-plugin
   ```
 
-### 2. Instalar Python 3.8+
+### 2. Instalar Python 3.11+
 
 Verifica tu versión de Python:
 ```bash
@@ -27,106 +27,106 @@ python3 --version
 pip install -r requirements.txt
 ```
 
-## 🚀 Ejecución Rápida (3 pasos)
+## 🚀 Ejecución Rápida
 
-### Opción A: Ejecutar todo automáticamente
+### Opción A: Con Docker (Recomendado - Todo Automatizado)
 
 ```bash
-# 1. Iniciar Neo4j
-docker compose up -d
+# Construir y ejecutar el contenedor
+docker-compose up --build
 
-# 2. Esperar 30 segundos para que Neo4j inicie completamente
-sleep 30
-
-# 3. Ejecutar el pipeline completo
-./run_pipeline.sh
+# El sistema ejecutará automáticamente:
+# 1. Generación de datos en Parquet
+# 2. Demostración de operaciones Arrow (zero-copy)
+# 3. Análisis de regresión lineal completo
 ```
 
-### Opción B: Ejecutar paso a paso
+### Opción B: Ejecución Local (Paso a Paso)
 
 ```bash
-# 1. Iniciar Neo4j
-docker compose up -d
-
-# 2. Esperar a que Neo4j esté listo (30 segundos)
-sleep 30
-
-# 3. Generar datos artificiales
+# 1. Generar datos en formato Parquet
 python generate_data.py
 
-# 4. Cargar datos en Neo4j
-python load_to_neo4j.py
+# 2. Demostrar operaciones Arrow con zero-copy
+python load_arrow_data.py
 
-# 5. Ejecutar análisis de regresión
+# 3. Ejecutar análisis de regresión
 python linear_regression.py
+```
+
+### Opción C: Pipeline Automatizado Local
+
+```bash
+# Ejecutar todo el pipeline
+./run_pipeline.sh
 ```
 
 ## 📊 Resultados
 
 Después de ejecutar el análisis, encontrarás:
 
-1. **house_data.csv** - 500 casas con características aleatorias
-2. **regression_output.tex** - Documento LaTeX con resultados completos
-3. **regression_plot.png** - Visualización gráfica del análisis
+1. **house_data.parquet** - Datos en formato HPC optimizado (20 KB)
+2. **house_data.csv** - Formato CSV para compatibilidad (19 KB)
+3. **regression_output.tex** - Documento LaTeX con resultados completos
+4. **regression_plot.png** - Visualización gráfica del análisis
 
-## 🌐 Acceder a Neo4j Browser
+## 💡 Ventajas del Stack HPC
 
-Abre tu navegador y ve a: http://localhost:7474
+### Apache Arrow - Zero-Copy
+- ✅ **Sin copias de memoria**: Acceso directo a datos
+- ✅ **Mayor velocidad**: 10-100x más rápido que operaciones tradicionales
+- ✅ **Menor RAM**: Reutilización eficiente de memoria
 
-**Credenciales:**
-- Usuario: `neo4j`
-- Contraseña: `password123`
+### Formato Parquet
+- ✅ **Compresión Snappy**: Datos comprimidos automáticamente
+- ✅ **Lectura columnar**: Solo lee columnas necesarias
+- ✅ **Metadata**: Estadísticas incluidas en el archivo
 
-## 🔍 Consultas Neo4j útiles
+## 🔍 Operaciones Arrow Disponibles
 
-```cypher
-// Ver todas las casas
-MATCH (h:House) RETURN h LIMIT 25
+```python
+from load_arrow_data import ArrowDataLoader
 
-// Casas más caras
-MATCH (h:House) 
-RETURN h.id, h.precio_usd, h.area_m2 
-ORDER BY h.precio_usd DESC 
-LIMIT 10
+loader = ArrowDataLoader('house_data.parquet')
 
-// Casas más baratas
-MATCH (h:House) 
-RETURN h.id, h.precio_usd, h.area_m2 
-ORDER BY h.precio_usd ASC 
-LIMIT 10
+# Estadísticas con PyArrow compute (muy rápido)
+stats = loader.get_statistics()
 
-// Precio promedio por número de habitaciones
-MATCH (h:House) 
-RETURN h.habitaciones, avg(h.precio_usd) as precio_promedio 
-ORDER BY h.habitaciones
+# Filtrar por rango de precio
+casas = loader.filter_by_price_range(200000, 300000)
+
+# Top N casas más caras
+top_10 = loader.get_top_n_by_price(10)
+
+# Conversión a Pandas con zero-copy
+df = loader.get_pandas_dataframe(zero_copy=True)
 ```
 
 ## 🛑 Detener el sistema
 
 ```bash
-docker compose down
+docker-compose down
 ```
 
 ## ❓ Solución de Problemas
 
-### Error: "No se pudo conectar a Neo4j"
-
-**Solución:** Neo4j necesita tiempo para iniciar. Espera 30-60 segundos después de `docker compose up -d`
-
-### Error: "ModuleNotFoundError"
+### Error: "ModuleNotFoundError: No module named 'pyarrow'"
 
 **Solución:** Instala las dependencias:
 ```bash
-pip install numpy pandas matplotlib scikit-learn seaborn neo4j
+pip install pyarrow fastparquet pandas
 ```
 
 ### Error: "docker: command not found"
 
 **Solución:** Instala Docker Desktop o el Docker Engine
 
-### Error: "Puerto 7474 o 7687 ya en uso"
+### El análisis es lento
 
-**Solución:** Otro proceso está usando esos puertos. Detén otros servicios Neo4j o cambia los puertos en `docker-compose.yml`
+**Solución:** El stack HPC con Arrow es muy rápido. Si notas lentitud:
+- Verifica que pyarrow esté instalado correctamente
+- Usa `zero_copy=True` en las conversiones a Pandas
+- El formato Parquet con compresión Snappy optimiza lectura/escritura
 
 ## 📝 Compilar el documento LaTeX
 
@@ -141,6 +141,21 @@ pdflatex regression_output.tex
 3. Copia el contenido de `regression_output.tex`
 4. Compila el documento
 
+## 🎯 Comparación: Neo4j vs HPC Stack
+
+| Aspecto | Neo4j (Anterior) | HPC Stack (Actual) |
+|---------|------------------|-------------------|
+| Conexión | Requiere red | ✅ Local |
+| Firewall | ❌ Problemas | ✅ Sin problemas |
+| Velocidad | Media | ✅ Muy rápida |
+| Memoria | Alta | ✅ Optimizada |
+| Setup | Complejo | ✅ Simple |
+| Zero-copy | No | ✅ Sí |
+
 ## 📚 Más información
 
-Ver el [README.md](README.md) completo para documentación detallada.
+Ver el [README.md](README.md) completo para documentación detallada sobre:
+- Arquitectura del stack HPC
+- Operaciones avanzadas con Arrow
+- Comparación de formatos de datos
+- Referencias técnicas

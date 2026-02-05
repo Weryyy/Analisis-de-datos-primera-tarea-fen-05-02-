@@ -77,16 +77,17 @@ def generate_house_data(n_samples: int = 500, random_state: int = 42) -> pd.Data
     return df
 
 
-def save_data(df: pd.DataFrame, output_path: str = 'house_data.csv'):
+def save_data(df: pd.DataFrame, output_path: str = 'house_data.parquet'):
     """
-    Guarda los datos generados en un archivo CSV
+    Guarda los datos generados en formato Parquet usando Apache Arrow
     
     Args:
         df: DataFrame con los datos
         output_path: Ruta del archivo de salida
     """
-    df.to_csv(output_path, index=False)
-    print(f"Datos guardados en: {output_path}")
+    # Guardar en formato Parquet con compresión snappy para mejor rendimiento
+    df.to_parquet(output_path, engine='pyarrow', compression='snappy', index=False)
+    print(f"Datos guardados en formato Parquet: {output_path}")
     print(f"Total de registros: {len(df)}")
     print(f"\nEstadísticas básicas:")
     print(df.describe())
@@ -97,7 +98,11 @@ if __name__ == '__main__':
     print("Generando datos artificiales de casas...")
     data = generate_house_data(n_samples=500, random_state=42)
     
-    # Guardar datos
-    save_data(data, 'house_data.csv')
+    # Guardar datos en formato Parquet
+    save_data(data, 'house_data.parquet')
+    
+    # También guardar en CSV para compatibilidad
+    data.to_csv('house_data.csv', index=False)
+    print("\nTambién guardado en CSV para compatibilidad: house_data.csv")
     
     print("\n¡Datos generados exitosamente!")

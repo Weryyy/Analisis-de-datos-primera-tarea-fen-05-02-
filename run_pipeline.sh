@@ -1,15 +1,16 @@
 #!/bin/bash
 set -e  # Exit immediately if any command fails
 
-# Script para ejecutar el pipeline completo de análisis
+# Script para ejecutar el pipeline completo de análisis con HPC Stack
 
 echo "============================================"
 echo "Pipeline de Análisis de Precios de Casas"
+echo "HPC Stack: Parquet + Apache Arrow"
 echo "============================================"
 echo ""
 
 # Paso 1: Generar datos
-echo "Paso 1: Generando datos artificiales..."
+echo "Paso 1: Generando datos artificiales en formato Parquet..."
 python generate_data.py
 if [ $? -ne 0 ]; then
     echo "Error al generar datos"
@@ -17,12 +18,11 @@ if [ $? -ne 0 ]; then
 fi
 echo ""
 
-# Paso 2: Cargar datos en Neo4j
-echo "Paso 2: Cargando datos en Neo4j..."
-python load_to_neo4j.py
+# Paso 2: Demostrar operaciones Arrow
+echo "Paso 2: Demostrando operaciones Arrow (zero-copy)..."
+python load_arrow_data.py
 if [ $? -ne 0 ]; then
-    echo "Error al cargar datos en Neo4j"
-    echo "Asegúrate de que Neo4j esté ejecutándose (docker-compose up -d)"
+    echo "Error al cargar datos con Arrow"
     exit 1
 fi
 echo ""
@@ -41,7 +41,8 @@ echo "¡Pipeline completado exitosamente!"
 echo "============================================"
 echo ""
 echo "Archivos generados:"
-echo "  - house_data.csv"
+echo "  - house_data.parquet (formato HPC optimizado)"
+echo "  - house_data.csv (compatibilidad)"
 echo "  - regression_output.tex"
 echo "  - regression_plot.png"
 echo ""

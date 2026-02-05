@@ -23,11 +23,12 @@ wheels/
 .installed.cfg
 *.egg
 
-# Neo4j
+# Data files (generated)
 neo4j/data/
 neo4j/logs/
 neo4j/import/
 neo4j/plugins/
+data/
 
 # IDE
 .vscode/
@@ -44,6 +45,7 @@ Thumbs.db
 regression_plot.png
 regression_output.tex
 *.pdf
+*.parquet
 
 # Directories for outputs
 output/
